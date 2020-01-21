@@ -9,10 +9,12 @@ int main() {
     int lines = read_file_lines(FILENAME_LONG);
     datapoint_t* datapoint = read_file_data(FILENAME_LONG, lines);
 
-    sort(datapoint, lines, LATITUDE);
+
 
     if (datapoint != NULL) {
+        //sort(datapoint, lines, LATITUDE);
         print_datapoint(datapoint, lines);
+        visualize(datapoint, lines, true);
         free(datapoint);
     }
 
@@ -92,4 +94,26 @@ void mergeSort(datapoint_t *datapoint, int p, int r, SORT_TYPE_t sortType) {
         mergeSort(datapoint, q + 1, r, sortType);
         merge(datapoint, p, q, r, sortType);
     }
+}
+void visualize(datapoint_t* datapoint, int lines, bool asTrack){
+    FILE *file = fopen("maps.gpx", "w");
+
+    fprintf(file, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    fprintf(file, "<gpx version=\"1.1\" creator=\"GdI-Projekt\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.topografix.com/GPX/1/1\" xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\" xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v1\">\n");
+    if(asTrack){
+        fprintf(file, "<trk><name>GdI Track</name><trkseg>\n");
+        for(int i = 0; i < lines; i+=8){
+            fprintf(file, "<trkpt lat=\"%f\" lon=\"%f\">\n", datapoint[i].details.latitude, datapoint[i].details.longitude);
+            fprintf(file, "</trkpt>\n");
+        }
+        fprintf(file, "</trkseg></trk>\n");
+    } else {
+        for(int i = 0; i < lines; i+=15){
+            fprintf(file, "<wpt lat=\"%f\" lon=\"%f\">\n", datapoint[i].details.latitude, datapoint[i].details.longitude);
+            fprintf(file, "</wpt>\n");
+        }
+    }
+
+    fprintf(file, "</gpx>");
+    fclose(file);
 }
