@@ -3,4 +3,4 @@ project(gdi C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(gdi main.c datapoint.c datapoint.h)
+add_executable(gdi main.c datapoint.c datapoint.h " main.h")

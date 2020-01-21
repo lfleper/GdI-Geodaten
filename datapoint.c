@@ -53,19 +53,17 @@ datapoint_t* read_file_data(char* filename, int lines) {
             while (fgets(lineBuffer, sizeof(lineBuffer), fp)) {
                 datapoint_t tmpDatapoint;
 
-                sscanf(lineBuffer, "%s\t%s\t%lf\t%lf\t%d\t%d\t%d\t%d\t%lf\t%lf\t%lf\t%d\t%lf\n", tmpDatapoint.details.event,
+                int scanResult = sscanf(lineBuffer, "%s\t%s\t%lf\t%lf\t%d\t%d\t%d\t%d\t%lf\t%lf\t%lf\t%d\t%lf\n", tmpDatapoint.details.event,
                        tmpDatapoint.details.datetime, &tmpDatapoint.details.latitude, &tmpDatapoint.details.longitude,
                         &tmpDatapoint.details.altitude, &tmpDatapoint.details.hhh, &tmpDatapoint.details.hgeom1,
                         &tmpDatapoint.details.hgeom2, &tmpDatapoint.details.PPPP, &tmpDatapoint.details.TTT,
                         &tmpDatapoint.details.RH, &tmpDatapoint.details.dd, &tmpDatapoint.details.ff);
 
-
-
-                datapoint[currentLine] = tmpDatapoint;
-
-                ++currentLine;
+                if(scanResult == 13){
+                    datapoint[currentLine] = tmpDatapoint;
+                    ++currentLine;
+                }
             }
-
             return datapoint;
         } else {
             return NULL;
@@ -81,10 +79,16 @@ datapoint_t* read_file_data(char* filename, int lines) {
  * @param lines Anzahl der Messdaten
  */
 void print_datapoint(datapoint_t* datapoint, int lines) {
+    FILE *pffile = fopen("output.txt", "w");
     for (int i = 0; i < lines; i++) {
-        printf("%s %s %lf %lf %d %d %d %d %lf %lf %lf %d %lf\n", datapoint[i].details.event, datapoint[i].details.datetime,
-                datapoint[i].details.latitude, datapoint[i].details.longitude, datapoint[i].details.altitude, datapoint[i].details.hhh,
-                datapoint[i].details.hgeom1, datapoint[i].details.hgeom2, datapoint[i].details.PPPP, datapoint[i].details.TTT, datapoint[i].details.RH,
-                datapoint[i].details.dd, datapoint[i].details.ff);
+        printf("%s %s %lf %lf %d %d %d %d %lf %lf %lf %d %lf\n", datapoint[i].details.event,
+               datapoint[i].details.datetime,
+               datapoint[i].details.latitude, datapoint[i].details.longitude, datapoint[i].details.altitude,
+               datapoint[i].details.hhh,
+               datapoint[i].details.hgeom1, datapoint[i].details.hgeom2, datapoint[i].details.PPPP,
+               datapoint[i].details.TTT, datapoint[i].details.RH,
+               datapoint[i].details.dd, datapoint[i].details.ff);
+
     }
+    fclose(pffile);
 }
